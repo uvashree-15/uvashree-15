@@ -22,7 +22,7 @@ This endpoint retrieves all Pods running within a specific namespace. It is usef
 GET /api/v1/namespaces/{namespace}/pods
 ```
 #### Example Request:
-```http
+```sh
 curl -X GET "https://<k8s-api-server>/api/v1/namespaces/default/pods" -H "Authorization: Bearer <token>"
 ```
 
@@ -35,18 +35,18 @@ GET /api/v1/namespaces/{namespace}/pods/{pod-name}
 A **namespace** in Kubernetes is a logical partition within a cluster that allows users to organize and manage resources separately. It acts as a virtual cluster within a physical Kubernetes cluster, providing isolation for different teams, projects, or environments.
 #### Example Request: 
 
-```http
+```sh
 curl -X GET "https://<k8s-api-server>/api/v1/namespaces/default/pods/mypod" -H "Authorization: Bearer <token>"
 ```
 ### c. Create a new Pod
 
 This API allows users to create a new Pod by submitting a JSON manifest that defines the Pod's specifications.
-```https 
+```http
 POST /api/v1/namespaces/{namespace}/pods
 ```
 
 #### Example Pod Manifest (pod.json):
-```https 
+```yaml 
 {
   "apiVersion": "v1",
   "kind": "Pod",
@@ -72,7 +72,7 @@ POST /api/v1/namespaces/{namespace}/pods
 }
 ```
 #### Example Request:
-```https
+```sh
 curl -X POST "https://<k8s-api-server>/api/v1/namespaces/default/pods" \
      -H "Authorization: Bearer <token>" \
      -H "Content-Type: application/json" \
@@ -81,16 +81,16 @@ curl -X POST "https://<k8s-api-server>/api/v1/namespaces/default/pods" \
 ## d. Update an existing Pod (Replace)
 
 Replacing a Pod entirely requires submitting a complete updated manifest. This method is rarely used directly as it deletes and recreates the Pod.
-```https
+```http
 PUT /api/v1/namespaces/{namespace}/pods/{pod-name}
 ```
 ### e. Patch a Pod (Partial Update)
 For minor modifications such as updating the container image, a **PATCH** request can be used instead of replacing the entire Pod.
-```https 
+```http
 PATCH /api/v1/namespaces/{namespace}/pods/{pod-name}
 ```
 #### Example JSON Patch:
-```https 
+```yaml 
 [
   {
     "op": "replace",
@@ -100,7 +100,7 @@ PATCH /api/v1/namespaces/{namespace}/pods/{pod-name}
 ]
 ```
 #### Example Request:
-```https 
+```sh 
 curl -X PATCH "https://<k8s-api-server>/api/v1/namespaces/default/pods/mypod" \
      -H "Authorization: Bearer <token>" \
      -H "Content-Type: application/json-patch+json" \
@@ -109,52 +109,52 @@ curl -X PATCH "https://<k8s-api-server>/api/v1/namespaces/default/pods/mypod" \
 ### f. Delete a Pod
 
 Pods can be deleted using this API, which gracefully terminates running containers before removing the Pod object.
-```https
+```http
 DELETE /api/v1/namespaces/{namespace}/pods/{pod-name}
 ```
 #### Example Request:
-```https
+```sh
 curl -X DELETE "https://<k8s-api-server>/api/v1/namespaces/default/pods/mypod" -H "Authorization: Bearer <token>"
 ```
 ## 2. Watching Pod Events (Real-time Updates)
 
 To track Pod status in real time, the API allows continuous streaming of Pod events.
-```https 
+```sh 
 curl -X GET "https://<k8s-api-server>/api/v1/namespaces/default/pods?watch=true" -H "Authorization: Bearer <token>"
 ```
 ## 3. Executing Commands in a Running Pod
 
 The Kubernetes API supports running shell commands inside a running Pod, useful for debugging and maintenance.
-```https
+```http
 POST /api/v1/namespaces/{namespace}/pods/{pod-name}/exec
 ```
 #### Example Request:
-```http
+```sh
 kubectl exec mypod -- ls
 ```
 `kubectl` is the **Kubernetes command-line tool** that allows users to interact with the Kubernetes API without needing to craft raw `HTTP` requests. It simplifies communication with the cluster and manages resources efficiently.
 ## 4. Port Forwarding to a Pod
 
 For direct access to applications inside a Pod, port forwarding can be enabled using the API.
-```https 
+```http 
 POST /api/v1/namespaces/{namespace}/pods/{pod-name}/portforward
 ```
 #### Example Request:
-```https
+```sh
 kubectl port-forward mypod 8080:80
 ```
 ## 5. Fetching Logs from a Pod
 
 The API provides access to container logs for **debugging purposes.**
-```https
+```http
 GET /api/v1/namespaces/{namespace}/pods/{pod-name}/log
 ```
 #### Example Request:
-```https 
+```sh
 kubectl logs mypod
 ```
 Using API:
-```http
+```sh
 curl -X GET "https://<k8s-api-server>/api/v1/namespaces/default/pods/mypod/log" -H "Authorization: Bearer <token>"
 ```
 
@@ -175,142 +175,6 @@ curl -X GET "https://<k8s-api-server>/api/v1/namespaces/default/pods/mypod/log" 
 |Pod Port Forward|`	POST`|`	/api/v1/namespaces/{namespace}/pods/{pod-name}/portforward`|
 |Get Pod Logs|`	GET`|`	/api/v1/namespaces/{namespace}/pods/{pod-name}/log`|
 
-
-
-
-
-
-### b. Get details of a specific Pod
-
-To fetch detailed information about a particular Pod, including its status, assigned **IP, resource limits, and running containers,** this API is used.
-```http 
-GET /api/v1/namespaces/{namespace}/pods/{pod-name}
-```
-A **namespace** in Kubernetes is a logical partition within a cluster that allows users to organize and manage resources separately. It acts as a virtual cluster within a physical Kubernetes cluster, providing isolation for different teams, projects, or environments.
-#### Example Request: 
-
-```http
-curl -X GET "https://<k8s-api-server>/api/v1/namespaces/default/pods/mypod" -H "Authorization: Bearer <token>"
-```
-### c. Create a new Pod
-
-This API allows users to create a new Pod by submitting a JSON manifest that defines the Pod's specifications.
-```https 
-POST /api/v1/namespaces/{namespace}/pods
-```
-
-#### Example Pod Manifest (pod.json):
-```https 
-{
-  "apiVersion": "v1",
-  "kind": "Pod",
-  "metadata": {
-    "name": "mypod",
-    "labels": {
-      "app": "myapp"
-    }
-  },
-  "spec": {
-    "containers": [
-      {
-        "name": "nginx-container",
-        "image": "nginx:latest",
-        "ports": [
-          {
-            "containerPort": 80
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-#### Example Request:
-```https
-curl -X POST "https://<k8s-api-server>/api/v1/namespaces/default/pods" \
-     -H "Authorization: Bearer <token>" \
-     -H "Content-Type: application/json" \
-     -d @pod.json
-```
-## d. Update an existing Pod (Replace)
-
-Replacing a Pod entirely requires submitting a complete updated manifest. This method is rarely used directly as it deletes and recreates the Pod.
-```https
-PUT /api/v1/namespaces/{namespace}/pods/{pod-name}
-```
-### e. Patch a Pod (Partial Update)
-For minor modifications such as updating the container image, a **PATCH** request can be used instead of replacing the entire Pod.
-```https 
-PATCH /api/v1/namespaces/{namespace}/pods/{pod-name}
-```
-#### Example JSON Patch:
-```https 
-[
-  {
-    "op": "replace",
-    "path": "/spec/containers/0/image",
-    "value": "nginx:1.21"
-  }
-]
-```
-#### Example Request:
-```https 
-curl -X PATCH "https://<k8s-api-server>/api/v1/namespaces/default/pods/mypod" \
-     -H "Authorization: Bearer <token>" \
-     -H "Content-Type: application/json-patch+json" \
-     -d '[{"op": "replace", "path": "/spec/containers/0/image", "value": "nginx:1.21"}]'
-``` 
-### f. Delete a Pod
-
-Pods can be deleted using this API, which gracefully terminates running containers before removing the Pod object.
-```https
-DELETE /api/v1/namespaces/{namespace}/pods/{pod-name}
-```
-#### Example Request:
-```https
-curl -X DELETE "https://<k8s-api-server>/api/v1/namespaces/default/pods/mypod" -H "Authorization: Bearer <token>"
-```
-## 2. Watching Pod Events (Real-time Updates)
-
-To track Pod status in real time, the API allows continuous streaming of Pod events.
-```https 
-curl -X GET "https://<k8s-api-server>/api/v1/namespaces/default/pods?watch=true" -H "Authorization: Bearer <token>"
-```
-## 3. Executing Commands in a Running Pod
-
-The Kubernetes API supports running shell commands inside a running Pod, useful for debugging and maintenance.
-```https
-POST /api/v1/namespaces/{namespace}/pods/{pod-name}/exec
-```
-#### Example Request:
-```http
-kubectl exec mypod -- ls
-```
-`kubectl` is the **Kubernetes command-line tool** that allows users to interact with the Kubernetes API without needing to craft raw `HTTP` requests. It simplifies communication with the cluster and manages resources efficiently.
-## 4. Port Forwarding to a Pod
-
-For direct access to applications inside a Pod, port forwarding can be enabled using the API.
-```https 
-POST /api/v1/namespaces/{namespace}/pods/{pod-name}/portforward
-```
-#### Example Request:
-```https
-kubectl port-forward mypod 8080:80
-```
-## 5. Fetching Logs from a Pod
-
-The API provides access to container logs for **debugging purposes.**
-```https
-GET /api/v1/namespaces/{namespace}/pods/{pod-name}/log
-```
-#### Example Request:
-```https 
-kubectl logs mypod
-```
-Using API:
-```http
-curl -X GET "https://<k8s-api-server>/api/v1/namespaces/default/pods/mypod/log" -H "Authorization: Bearer <token>"
-```
 
 ## Conclusion
 The Kubernetes API for Pod management provides a comprehensive set of endpoints to interact with and control Pods programmatically. Whether creating new Pods, updating configurations, retrieving logs, or debugging running  applications, these API endpoints form the backbone of Kubernetes automation.
